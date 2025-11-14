@@ -1,5 +1,4 @@
 import time
-from typing import Tuple
 from sqlalchemy.orm import Session
 from app.services.llm_service import LLMService
 from app.services.vector_service import VectorService

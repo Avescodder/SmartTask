@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTask FAQ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #questionInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        #questionInput:focus {
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            display: none;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .answer-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .answer {
+            padding: 20px;
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .cached {
+            background: #4CAF50;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .sources {
+            margin-top: 20px;
+        }
+
+        .sources h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .source-item {
+            padding: 15px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .source-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .source-name {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .similarity {
+            background: #e3f2fd;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #1976d2;
+        }
+
+        .source-content {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .error {
+            padding: 15px;
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            border-radius: 8px;
+            color: #c62828;
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 SmartTask FAQ</h1>
+            <p>Задай вопрос о SmartTask — я отвечу на основе документации</p>
+        </div>
+
+        <div class="card">
+            <div class="input-group">
+                <input type="text" id="questionInput" placeholder="Введите ваш вопрос..." />
+                <button class="btn" id="askBtn" onclick="askQuestion()">Спросить</button>
+            </div>
+
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                Ищу ответ в документации...
+            </div>
+
+            <div id="answerSection" class="answer-section">
+                <div id="answer" class="answer"></div>
+                <div id="meta" class="meta"></div>
+
+                <div class="sources">
+                    <h3>📚 Использованные источники:</h3>
+                    <div id="sources"></div>
+                </div>
+            </div>
+
+            <div id="error" class="error"></div>
+        </div>
+    </div>
+
+    <script>
+        async function askQuestion() {
+            const question = document.getElementById('questionInput').value.trim();
+
+            if (!question) {
+                alert('Введите вопрос');
+                return;
+            }
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('answerSection').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('askBtn').disabled = true;
+
+            try {
+                const response = await fetch('/api/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question })
+                });
+
+                if (!response.ok) throw new Error('Ошибка сервера');
+
+                const data = await response.json();
+                displayAnswer(data);
+
+            } catch (error) {
+                document.getElementById('error').textContent =
+                    '❌ Произошла ошибка: ' + error.message;
+                document.getElementById('error').style.display = 'block';
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('askBtn').disabled = false;
+            }
+        }
+
+        function displayAnswer(data) {
+            document.getElementById('answer').textContent = data.answer;
+
+            const metaHtml = `
+                <div class="meta-item">⏱️ Время: ${data.response_time.toFixed(2)}с</div>
+                <div class="meta-item">🔢 Токены: ${data.tokens_used}</div>
+                <div class="meta-item">📄 Источников: ${data.sources.length}</div>
+                ${data.cached ? '<div class="cached">ИЗ КЕША</div>' : ''}
+            `;
+            document.getElementById('meta').innerHTML = metaHtml;
+
+            const sourcesHtml = data.sources.map(source => `
+                <div class="source-item">
+                    <div class="source-header">
+                        <div class="source-name">${source.filename}</div>
+                        <div class="similarity">Схожесть: ${(source.similarity * 100).toFixed(1)}%</div>
+                    </div>
+                    <div class="source-content">${source.content}</div>
+                </div>
+            `).join('');
+            document.getElementById('sources').innerHTML = sourcesHtml;
+
+            document.getElementById('answerSection').style.display = 'block';
+        }
+
+        window.onload = () => {
+            document.getElementById('questionInput').focus();
+        };
+    </script>
+</body>
+</html>
