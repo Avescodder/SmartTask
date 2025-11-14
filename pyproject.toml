@@ -1,0 +1,22 @@
+[project]
+name = "smarttask"
+version = "0.1.0"
+description = "FAQ Service - RAG-based Q&A System"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiofiles>=25.1.0",
+    "fastapi>=0.121.2",
+    "httpx>=0.28.1",
+    "openai>=2.8.0",
+    "pgvector>=0.4.1",
+    "psycopg2-binary>=2.9.11",
+    "pydantic>=2.12.4",
+    "pydantic-settings>=2.12.0",
+    "pytest>=9.0.1",
+    "pytest-asyncio>=1.3.0",
+    "python-multipart>=0.0.20",
+    "redis>=7.0.1",
+    "sqlalchemy>=2.0.44",
+    "uvicorn>=0.38.0",
+]
