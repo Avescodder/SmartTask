@@ -1,3 +1,4 @@
+from sqlalchemy import bindparam
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from typing import List, Tuple
@@ -77,22 +78,22 @@ class VectorService:
         try:
             query_embedding = await self.llm.get_embedding(query)
             
-            embedding_str = '[' + ','.join(map(str, query_embedding)) + ']'
+
             
             sql = text("""
                 SELECT 
                     filename, 
                     content, 
-                    1 - (embedding <=> :embedding::vector) as similarity
+                    1 - (embedding <=> cast(:embedding as vector)) as similarity
                 FROM documents
-                ORDER BY embedding <=> :embedding::vector
+                ORDER BY embedding <=> cast(:embedding as vector)
                 LIMIT :limit
-            """)
-            
-            result = self.db.execute(
-                sql,
-                {"embedding": embedding_str, "limit": top_k}
+            """).bindparams(
+                bindparam("embedding", value=str(query_embedding)),
+                bindparam("limit", value=top_k)
             )
+            
+            result = self.db.execute(sql)
             
             similar_docs = [
                 (row.filename, row.content, float(row.similarity)) 
@@ -109,3 +110,4 @@ class VectorService:
         except Exception as e:
             logger.error(f"Error in vector search: {e}", exc_info=True)
             raise
+            
