@@ -1,6 +1,6 @@
 from typing import Dict, List
 from app.services.rag_service import RAGService
-from app.database import get_db
+from app.database import get_db_context
 import asyncio
 from app.utils.logger import logger
 
@@ -62,7 +62,7 @@ class RAGEvaluator:
             "details": []
         }
         
-        with get_db() as db:
+        with get_db_context() as db:
             rag = RAGService(db)
             
             for test_case in self.test_questions:
