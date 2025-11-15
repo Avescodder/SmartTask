@@ -362,6 +362,21 @@ docker compose exec postgres psql -U smarttask -d smarttask_db
 SELECT COUNT(*) FROM documents;
 SELECT filename, chunk_index FROM documents;
 ```
+## 🤖 Использование Claude Code в разработке
+
+В процессе разработки активно использовался Claude Code для:
+
+1. **Генерации базовой структуры проекта**
+   ![Claude Code Structure](screenshots/01-structure.png)
+
+2. **Code review**
+   ![Claude Code RAG](screenshots/02-rag-pipeline.png)
+
+3. **Объяснение некоторых аспектов проекта**
+   ![Claude Code Tests](screenshots/03-tests.png)
+
+4. **Отладки и исправления багов**
+   ![Claude Code Debug](screenshots/04-debugging.png)
 
 ## 📊 Производительность
 
