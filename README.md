@@ -99,7 +99,7 @@ docker compose up --build
 | Сервис | URL | Описание |
 |--------|-----|----------|
 | 🌐 Web UI | http://localhost:8000 | Интерфейс для вопросов |
-| 📚 API Docs | http://localhost:8000/docs | Swagger документация |
+| 📚 API Metrics | http://localhost:8000/api/metrics | API метрики |
 | 🏥 Health Check | http://localhost:8000/api/health | Статус сервисов |
 
 ## 📡 API Документация
