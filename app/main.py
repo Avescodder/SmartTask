@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.api.endpoints import router
-from app.database import init_db, get_db
+from app.database import init_db, get_db_context 
 from app.services.vector_service import VectorService
 from app.utils.logger import logger
 from app.config import get_settings
@@ -36,7 +36,7 @@ async def load_initial_documents():
         logger.warning("Documents folder not found")
         return
     
-    with get_db() as db:
+    with get_db_context() as db:
         from app.models import Document
         if db.query(Document).count() > 0:
             logger.info("Documents already loaded, skipping")

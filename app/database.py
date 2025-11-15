@@ -24,14 +24,22 @@ def init_db():
         conn.commit()
     Base.metadata.create_all(bind=engine)
 
-
-@contextmanager
 def get_db() -> Generator[Session, None, None]:
     """
-    Контекстный менеджер для использования в коде (with get_db() as db)
-    И dependency для FastAPI (db: Session = Depends(get_db))
-    
-    FastAPI автоматически понимает контекстные менеджеры!
+    Dependency для FastAPI endpoints
+    """
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+@contextmanager
+def get_db_context() -> Generator[Session, None, None]:
+    """
+    Контекстный менеджер для использования с 'with' statement
+    Используйте это в main.py и других местах, где нужен with
     """
     db = SessionLocal()
     try:
