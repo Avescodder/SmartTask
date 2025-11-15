@@ -83,6 +83,7 @@ async def root():
     """Главная страница"""
     with open("static/index.html", "r", encoding="utf-8") as f:
         return f.read()
+    
 
 
 if __name__ == "__main__":
