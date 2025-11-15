@@ -14,6 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app/ ./app/
 COPY static/ ./static/
 COPY documents/ ./documents/
+COPY tests/ ./tests/      
 
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser

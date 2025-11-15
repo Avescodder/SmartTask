@@ -67,7 +67,7 @@ class RAGService:
         
         response_data = {
             "answer": answer,
-            "sources": [s.dict() for s in sources],
+            "sources": [s.model_dump() for s in sources],
             "tokens_used": tokens,
             "response_time": response_time
         }
