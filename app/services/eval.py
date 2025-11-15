@@ -1,4 +1,5 @@
-from typing import Dict, List
+
+from typing import Dict
 from app.services.rag_service import RAGService
 from app.database import get_db_context
 import asyncio
@@ -6,50 +7,63 @@ from app.utils.logger import logger
 
 
 class RAGEvaluator:
-    """Evaluate RAG system quality"""
+    """Evaluate RAG system quality based on ACTUAL documents"""
     
     def __init__(self):
         self.test_questions = [
             {
                 "question": "Как создать задачу?",
-                "expected_keywords": ["нажмите", "создать", "кнопка", "+", "название"],
+                "expected_keywords": ["задача", "нажмите", "+", "название"],
                 "category": "task_management"
             },
-            {
-                "question": "How do I create a task?",
-                "expected_keywords": ["click", "button", "create", "title", "+"],
-                "category": "task_management"
-            },
+            
             {
                 "question": "Где хранятся данные?",
-                "expected_keywords": ["франкфурт", "германия", "aws", "европ", "сервер"],
+                "expected_keywords": ["aws", "франкфурт", "германия"],
                 "category": "security"
             },
-            {
-                "question": "Where is data stored?",
-                "expected_keywords": ["frankfurt", "germany", "aws", "europe", "server"],
-                "category": "security"
-            },
+            
             {
                 "question": "Какие интеграции поддерживаются?",
-                "expected_keywords": ["slack", "google", "calendar", "github", "интеграц"],
-                "category": "features"
+                "expected_keywords": ["slack", "github", "google"],
+                "category": "integrations"
             },
+            
             {
-                "question": "What integrations are available?",
-                "expected_keywords": ["slack", "google", "calendar", "github", "integration"],
-                "category": "features"
+                "question": "Как получить список задач через API?",
+                "expected_keywords": ["get", "/tasks", "api"],
+                "category": "api"
             },
+            
             {
-                "question": "Как включить двухфакторную аутентификацию?",
-                "expected_keywords": ["настройк", "безопасн", "2fa", "qr", "код"],
+                "question": "Как управлять проектом?",
+                "expected_keywords": ["kanban", "доска", "перетаскива"],
+                "category": "project_management"
+            },
+            
+            {
+                "question": "Какое шифрование используется?",
+                "expected_keywords": ["aes", "256", "шифрован"],
                 "category": "security"
             },
+            
             {
-                "question": "How to enable two-factor authentication?",
-                "expected_keywords": ["settings", "security", "2fa", "qr", "code"],
-                "category": "security"
-            }
+                "question": "Какие есть тарифные планы?",
+                "expected_keywords": ["free", "pro", "enterprise"],
+                "category": "pricing"
+            },
+            
+            {
+                "question": "Что делать если не приходят уведомления?",
+                "expected_keywords": ["email", "спам", "настройк", "уведомлен"],
+                "category": "troubleshooting"
+            },
+            
+            {
+                "question": "Какой максимальный размер файла?",
+                "expected_keywords": ["50", "мб", "файл"],
+                "category": "features"
+            },
         ]
     
     async def evaluate(self) -> Dict:
@@ -103,7 +117,8 @@ class RAGEvaluator:
                         "keyword_match_rate": len(found_keywords) / len(expected_keywords),
                         "answer_preview": answer[:200] + "..." if len(answer) > 200 else answer,
                         "response_time": response.response_time,
-                        "tokens_used": response.tokens_used
+                        "tokens_used": response.tokens_used,
+                        "sources_count": len(response.sources)
                     })
                 
                 except Exception as e:
@@ -139,9 +154,14 @@ async def run_eval():
     print("="*70)
     
     print("\n📁 Results by Category:")
-    for category, stats in results['by_category'].items():
-        print(f"  {category.upper()}:")
-        print(f"    Passed: {stats['passed']}/{stats['total']} ({stats['accuracy']:.1%})")
+    for category, stats in sorted(results['by_category'].items()):
+        passed = stats['passed']
+        total = stats['total']
+        accuracy = stats['accuracy']
+        
+        emoji = "✅" if accuracy >= 0.7 else "⚠️" if accuracy >= 0.5 else "❌"
+        print(f"  {emoji} {category.upper()}:")
+        print(f"      Passed: {passed}/{total} ({accuracy:.1%})")
     
     print("\n📝 Detailed Results:")
     print("-"*70)
@@ -158,9 +178,22 @@ async def run_eval():
             print(f"Keyword Match: {match_rate:.1%}")
             print(f"Found: {detail['found_keywords']}")
             print(f"Expected: {detail['expected_keywords']}")
-            print(f"Time: {detail.get('response_time', 0):.2f}s | Tokens: {detail.get('tokens_used', 0)}")
+            print(f"Sources: {detail.get('sources_count', 0)} | "
+                  f"Time: {detail.get('response_time', 0):.2f}s | "
+                  f"Tokens: {detail.get('tokens_used', 0)}")
     
     print("\n" + "="*70)
+
+    if results['accuracy'] < 0.7:
+        print("\n💡 Recommendations:")
+        print("  1. Check if documents are loaded: docker compose logs api | grep 'Loaded'")
+        print("  2. Increase top_k in config.py (try 5 or 7)")
+        print("  3. Lower similarity_threshold (try 0.2)")
+        print("  4. Use better model: OPENAI_MODEL=gpt-4o-mini")
+    elif results['accuracy'] >= 0.7:
+        print("\n🎉 Good results! System is working well.")
+    
+    print("="*70 + "\n")
     
     return results
 
