@@ -15,9 +15,6 @@ wheels/
 .venv
 .env 
 
-documents/*
-!documents/.gitkeep
-
 .uv/
 uv.cache/
 
