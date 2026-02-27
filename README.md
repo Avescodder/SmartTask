@@ -1,36 +1,35 @@
 # SmartTask FAQ Service
 
-Интеллектуальная система вопросов и ответов на основе RAG (Retrieval-Augmented Generation) для документации SmartTask.
+An intelligent question-answering system based on RAG (Retrieval-Augmented Generation) for SmartTask documentation.
 
 ![Python](https://img.shields.io/badge/python-3.11-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.121-green.svg)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue.svg)
 
-## 📋 Содержание
+## Table of Contents
 
-- [Возможности](#-возможности)
-- [Архитектура](#️-архитектура)
-- [Быстрый старт](#-быстрый-старт)
-- [API Документация](#-api-документация)
-- [Тестирование](#-тестирование)
-- [Конфигурация](#-конфигурация)
-- [Разработка](#-разработка)
-- [Производительность](#-производительность)
-- [Решение проблем](#-решение-проблем)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Quick Start](#quick-start)
+- [API Documentation](#api-documentation)
+- [Testing](#testing)
+- [Configuration](#configuration)
+- [Development](#development)
+- [Performance](#performance)
+- [Troubleshooting](#troubleshooting)
 
-## ✨ Возможности
+## Features
 
-- 🤖 **Семантический поиск** с использованием pgvector
-- 💬 **Генерация ответов** через OpenAI GPT-3.5/4
-- ⚡ **Redis кэширование** для быстрых ответов
-- 📄 **Автоматическая обработка** документов при старте
-- 📊 **Метрики и мониторинг** использования
-- 🌐 **Web UI** для удобного взаимодействия
-- 🧪 **Полное тестовое покрытие**
-- 🐳 **Docker Compose** для простого развёртывания
+- Semantic search powered by pgvector
+- Answer generation via OpenAI GPT-3.5/4
+- Redis caching for fast responses
+- Automatic document processing on startup
+- Usage metrics and monitoring
+- Web UI for interaction
+- Full test coverage
+- Docker Compose deployment
 
-## 🏗️ Архитектура
-
+## Architecture
 ```
 ┌─────────────┐      ┌──────────────┐      ┌─────────────┐
 │   Browser   │─────▶│   FastAPI    │─────▶│   OpenAI    │
@@ -45,7 +44,7 @@
         └──────────┘  └──────────┘  └─────────┘
 ```
 
-### Технологический стек
+### Technology Stack
 
 - **Backend**: FastAPI 0.121 (Python 3.11)
 - **Database**: PostgreSQL 16 + pgvector extension
@@ -55,74 +54,74 @@
 - **Validation**: Pydantic 2.12
 - **Container**: Docker + Docker Compose
 
-## 🚀 Быстрый старт
+## Quick Start
 
-### Требования
+### Prerequisites
 
-- Docker Desktop (или Docker Engine + Docker Compose)
-- OpenAI API ключ ([получить здесь](https://platform.openai.com/api-keys))
-- 2GB свободной RAM
-- Порты 8000, 5432, 6379 свободны
+- Docker Desktop (or Docker Engine + Docker Compose)
+- OpenAI API key ([get one here](https://platform.openai.com/api-keys))
+- 2GB free RAM
+- Ports 8000, 5432, 6379 available
 
-### Установка за 3 шага
+### Setup in 3 Steps
 
-**1. Клонируйте проект**
+**1. Clone the repository**
 ```bash
 git clone https://github.com/Avescodder/SmartTask.git
 cd SmartTask
 ```
 
-**2. Настройте переменные окружения**
+**2. Configure environment variables**
 ```bash
 cp .env.example .env
 ```
 
-Отредактируйте `.env` и установите ваш OpenAI API ключ:
+Edit `.env` and set your OpenAI API key:
 ```bash
 OPENAI_API_KEY=sk-proj-your-actual-key-here
 ```
 
-**3. Запустите сервисы**
+**3. Start the services**
 ```bash
 docker compose up --build
 ```
 
-Подождите ~30 секунд пока все сервисы запустятся. Вы увидите:
+Wait approximately 30 seconds for all services to initialize. You should see:
 ```
-✅ smarttask-postgres | database system is ready to accept connections
-✅ smarttask-redis    | Ready to accept connections
-✅ smarttask-api      | Application startup complete
+smarttask-postgres | database system is ready to accept connections
+smarttask-redis    | Ready to accept connections
+smarttask-api      | Application startup complete
 ```
 
-### Доступ к сервисам
+### Access
 
-| Сервис | URL | Описание |
-|--------|-----|----------|
-| 🌐 Web UI | http://localhost:8000 | Интерфейс для вопросов |
-| 📚 API Metrics | http://localhost:8000/api/metrics | API метрики |
-| 🏥 Health Check | http://localhost:8000/api/health | Статус сервисов |
+| Service | URL | Description |
+|---|---|---|
+| Web UI | http://localhost:8000 | Question interface |
+| API Metrics | http://localhost:8000/api/metrics | Usage metrics |
+| Health Check | http://localhost:8000/api/health | Service status |
 
-## 📡 API Документация
+## API Documentation
 
-### POST `/api/ask` - Задать вопрос
+### POST `/api/ask` — Ask a Question
 
 **Request:**
 ```bash
 curl -X POST http://localhost:8000/api/ask \
   -H "Content-Type: application/json" \
   -d '{
-    "question": "Как создать задачу в SmartTask?"
+    "question": "How do I create a task in SmartTask?"
   }'
 ```
 
 **Response:**
 ```json
 {
-  "answer": "Чтобы создать задачу в SmartTask, нажмите кнопку '+' в правом верхнем углу...",
+  "answer": "To create a task in SmartTask, click the '+' button in the top right corner...",
   "sources": [
     {
       "filename": "SmartTask_API.txt",
-      "content": "Создание задач: POST /api/tasks...",
+      "content": "Task creation: POST /api/tasks...",
       "similarity": 0.89
     }
   ],
@@ -132,8 +131,7 @@ curl -X POST http://localhost:8000/api/ask \
 }
 ```
 
-### POST `/api/documents` - Загрузить документ
-
+### POST `/api/documents` — Upload a Document
 ```bash
 curl -X POST http://localhost:8000/api/documents \
   -F "file=@my-documentation.txt"
@@ -148,8 +146,7 @@ curl -X POST http://localhost:8000/api/documents \
 }
 ```
 
-### GET `/api/health` - Проверка здоровья
-
+### GET `/api/health` — Health Check
 ```bash
 curl http://localhost:8000/api/health
 ```
@@ -165,8 +162,7 @@ curl http://localhost:8000/api/health
 }
 ```
 
-### GET `/api/metrics` - Метрики использования
-
+### GET `/api/metrics` — Usage Metrics
 ```bash
 curl http://localhost:8000/api/metrics
 ```
@@ -182,41 +178,38 @@ curl http://localhost:8000/api/metrics
 }
 ```
 
-## 🧪 Тестирование
+## Testing
 
-### Запуск всех тестов
-
+### Run all tests
 ```bash
 docker compose exec api pytest tests/ -v
 ```
 
-Ожидаемый результат:
+Expected output:
 ```
 ===================== 15 passed in 4.47s =====================
 ```
 
-### Запуск конкретных тестов
-
+### Run specific tests
 ```bash
-# Только API тесты
+# API tests only
 docker compose exec api pytest tests/test_api.py -v
 
-# Только RAG тесты
+# RAG tests only
 docker compose exec api pytest tests/test_rag.py -v
 
-# С покрытием кода
+# With coverage report
 docker compose exec api pytest tests/ --cov=app --cov-report=html
 ```
 
-### Оценка качества RAG
-
+### RAG Quality Evaluation
 ```bash
 docker compose exec api python -m app.services.eval
 ```
 
-Результат покажет:
+Sample output:
 ```
-📊 RAG System Evaluation Results
+RAG System Evaluation Results
 ============================================================
 Total tests: 8
 Passed: 7
@@ -224,370 +217,252 @@ Failed: 1
 Overall Accuracy: 87.5%
 ============================================================
 
-📁 Results by Category:
+Results by Category:
   TASK_MANAGEMENT:
     Passed: 3/4 (75.0%)
   SECURITY:
     Passed: 4/4 (100.0%)
 ```
 
-## ⚙️ Конфигурация
+## Configuration
 
-### Основные переменные окружения
+### Environment Variables
 
-| Переменная | Описание | По умолчанию | Обязательна |
-|-----------|----------|--------------|-------------|
-| `OPENAI_API_KEY` | Ключ OpenAI API | - | ✅ Да |
-| `OPENAI_MODEL` | Модель для генерации | `gpt-3.5-turbo` | Нет |
-| `EMBEDDING_MODEL` | Модель для embeddings | `text-embedding-3-small` | Нет |
-| `POSTGRES_USER` | Пользователь БД | `smarttask` | Нет |
-| `POSTGRES_PASSWORD` | Пароль БД | `password` | Нет |
-| `POSTGRES_DB` | Имя базы данных | `smarttask_db` | Нет |
-| `REDIS_HOST` | Хост Redis | `redis` | Нет |
-| `REDIS_TTL` | Время жизни кэша (сек) | `3600` | Нет |
+| Variable | Description | Default | Required |
+|---|---|---|---|
+| `OPENAI_API_KEY` | OpenAI API key | — | Yes |
+| `OPENAI_MODEL` | Generation model | `gpt-3.5-turbo` | No |
+| `EMBEDDING_MODEL` | Embedding model | `text-embedding-3-small` | No |
+| `POSTGRES_USER` | Database user | `smarttask` | No |
+| `POSTGRES_PASSWORD` | Database password | `password` | No |
+| `POSTGRES_DB` | Database name | `smarttask_db` | No |
+| `REDIS_HOST` | Redis host | `redis` | No |
+| `REDIS_TTL` | Cache TTL (seconds) | `3600` | No |
 
-### Настройки RAG
+### RAG Settings
 
-Измените в `app/config.py`:
-
+Configure in `app/config.py`:
 ```python
-# Размер чанков документа
+# Document chunk size
 chunk_size: int = 1000
 
-# Перекрытие между чанками
+# Overlap between chunks
 chunk_overlap: int = 200
 
-# Количество релевантных чанков для контекста
+# Number of relevant chunks for context
 top_k: int = 3
 ```
 
-### Добавление документов
+### Adding Documents
 
-Документы автоматически загружаются при старте из папки `documents/`:
-
+Documents are automatically loaded from the `documents/` directory on startup:
 ```bash
-# Добавьте новый документ
-echo "Ваша документация" > documents/new-doc.txt
+# Add a new document
+echo "Your documentation content" > documents/new-doc.txt
 
-# Перезапустите сервис
+# Restart the service
 docker compose restart api
 
-# Или загрузите через API
+# Or upload via API
 curl -X POST http://localhost:8000/api/documents \
   -F "file=@documents/new-doc.txt"
 ```
 
-**Требования к документам:**
-- Формат: `.txt` или `.md`
-- Кодировка: UTF-8
-- Минимальный размер: 50 символов
-- Максимальный размер: 10MB
+**Document requirements:**
+- Format: `.txt` or `.md`
+- Encoding: UTF-8
+- Minimum size: 50 characters
+- Maximum size: 10MB
 
-## 💻 Разработка
+## Development
 
-### Структура проекта
-
+### Project Structure
 ```
 smarttask-faq/
 ├── app/
-│   ├── main.py              # Точка входа FastAPI
-│   ├── config.py            # Настройки приложения
-│   ├── database.py          # Подключение к БД
-│   ├── models.py            # SQLAlchemy модели
-│   ├── schemas.py           # Pydantic схемы
+│   ├── main.py              # FastAPI entry point
+│   ├── config.py            # Application settings
+│   ├── database.py          # Database connection
+│   ├── models.py            # SQLAlchemy models
+│   ├── schemas.py           # Pydantic schemas
 │   ├── api/
-│   │   └── endpoints.py     # API маршруты
+│   │   └── endpoints.py     # API routes
 │   ├── services/
-│   │   ├── rag_service.py   # Оркестрация RAG pipeline
-│   │   ├── vector_service.py # Векторные операции
-│   │   ├── llm_service.py   # OpenAI клиент
-│   │   ├── cache_service.py # Redis кэширование
-│   │   └── eval.py          # Оценка качества
+│   │   ├── rag_service.py   # RAG pipeline orchestration
+│   │   ├── vector_service.py # Vector operations
+│   │   ├── llm_service.py   # OpenAI client
+│   │   ├── cache_service.py # Redis caching
+│   │   └── eval.py          # Quality evaluation
 │   └── utils/
-│       ├── logger.py        # Логирование
-│       └── metrics.py       # Метрики производительности
-├── documents/               # Документы для индексации
+│       ├── logger.py        # Logging
+│       └── metrics.py       # Performance metrics
+├── documents/               # Documents for indexing
 ├── static/
-│   └── index.html          # Web интерфейс
-├── tests/                   # Тесты
-├── docker-compose.yml      # Оркестрация сервисов
-├── Dockerfile              # Образ приложения
-├── requirements.txt        # Python зависимости
-└── .env                    # Переменные окружения
+│   └── index.html           # Web interface
+├── tests/                   # Tests
+├── docker-compose.yml       # Service orchestration
+├── Dockerfile               # Application image
+├── requirements.txt         # Python dependencies
+└── .env                     # Environment variables
 ```
 
-### Локальная разработка
-
+### Local Development
 ```bash
-# 1. Создайте виртуальное окружение
+# 1. Create a virtual environment
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# 2. Установите зависимости
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Запустите только БД и Redis
+# 3. Start only the database and Redis
 docker compose up postgres redis
 
-# 4. Настройте переменные окружения
+# 4. Set environment variables
 export POSTGRES_HOST=localhost
 export REDIS_HOST=localhost
 export OPENAI_API_KEY=sk-...
 
-# 5. Запустите приложение
+# 5. Run the application
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### Просмотр логов
-
+### Viewing Logs
 ```bash
-# Все сервисы
+# All services
 docker compose logs -f
 
-# Только API
+# API only
 docker compose logs -f api
 
-# Последние 100 строк
+# Last 100 lines
 docker compose logs --tail=100 api
 ```
 
-### Подключение к базе данных
-
+### Database Access
 ```bash
 docker compose exec postgres psql -U smarttask -d smarttask_db
 
-# Полезные команды:
-\dt              # Список таблиц
-\d documents     # Структура таблицы
+# Useful commands:
+\dt                                          # List tables
+\d documents                                 # Table structure
 SELECT COUNT(*) FROM documents;
 SELECT filename, chunk_index FROM documents;
 ```
-## 🤖 Использование Claude в разработке
 
-Проект полностью разработан с использованием Claude (Sonnet 4.5) через веб-интерфейс Claude.ai. Ниже представлены ключевые этапы разработки.
+## Development Process with Claude
 
-### 📋 Этап 1: Планирование и структура проекта
+The project was built entirely using Claude (Sonnet 4.5) via the Claude.ai web interface. Below is an overview of the key development stages.
 
-**Анализ требований и создание roadmap**
-![Разбор задания](screenshots/explanation_2.png)
-![Детальный план](screenshots/explanation_3.png)
+### Stage 1: Planning and Project Structure
 
-Claude помог:
-- Декомпозировать тестовое задание на конкретные задачи
-- Создать пошаговый roadmap разработки
-- Определить технологический стек
+Claude assisted with decomposing the requirements into concrete tasks, creating a step-by-step development roadmap, and defining the technology stack. The architecture was designed with clear layer separation: API endpoints, business logic (services), data access (models, database), and utilities (logging, metrics).
 
-**Проектирование архитектуры**
-![Структура проекта 1](screenshots/proj_structure.png)
-![Структура проекта 2](screenshots/proj_structure_2.png)
-![Структура проекта 3](screenshots/proj_structure_3.png)
+### Stage 2: Core Functionality
 
-Создана чистая архитектура с разделением на слои:
-- API endpoints
-- Business logic (services)
-- Data access (models, database)
-- Utilities (logging, metrics)
+First iteration covered the foundational RAG pipeline: vector search with pgvector, document chunking with overlap, OpenAI API integration, and basic caching.
 
----
+### Stage 3: Improvements and Refinements
 
-### 💻 Этап 2: Разработка основного функционала
+Based on proactive suggestions from Claude, the following were added: usage metrics and monitoring, improved error handling, optimized LLM prompts, and a RAG evaluation system. Bug fixes included Redis connection issues, vector search errors, and input validation.
 
-**Первая итерация: базовый RAG pipeline**
-![Первый обзор](screenshots/first_review.png)
-![Ревью 2](screenshots/first_review_2.png)
-![Ревью 3](screenshots/first_review_3.png)
-![Ревью 4](screenshots/first_review_4.png)
-![Ревью 5](screenshots/first_review_5.png)
-![Ревью 6](screenshots/first_review_6.png)
-![Заключение первой итерации](screenshots/first_review_conclusion.png)
+### Stage 4: Final Review
 
-Реализовано:
-- Векторный поиск с pgvector
-- Chunking документов с overlap
-- Интеграция с OpenAI API
-- Базовое кэширование
+All endpoints verified, tests passing, Docker Compose confirmed working, documentation complete, and eval accuracy confirmed above 80%.
 
----
+### Outcomes
 
-### 🔧 Этап 3: Улучшения и доработки
+- **Development time**: ~4–5 hours with Claude assistance
+- **Lines of code**: ~2000 (including tests and configuration)
+- **Test count**: 15 tests
+- **RAG quality**: 87.5% accuracy on the evaluation dataset
 
-**Предложения по улучшению**
-![Suggestions](screenshots/improvment_suggestions.png)
+Without AI assistance, a project of this scope would have taken approximately 2–3 days.
 
-Claude предложил:
-- Добавить метрики и monitoring
-- Улучшить обработку ошибок
-- Оптимизировать prompt для LLM
-- Добавить eval систему
+## Performance
 
-**Исправление багов**
-![Bug fixing](screenshots/bug_fixing.png)
-![Bug fixing детали](screenshots/bug_fixing_3.png)
+### Typical Response Times
 
-Исправлены:
-- Проблемы с подключением к Redis
-- Ошибки в векторном поиске
-- Валидация входных данных
+| Scenario | Time | Description |
+|---|---|---|
+| Cache Hit | ~50ms | Response served from Redis |
+| Cache Miss (no LLM) | ~1s | Vector search only |
+| Cache Miss (full) | ~2–3s | Vector search + answer generation |
 
----
+### Token Usage
 
-### ✅ Этап 4: Финальная проверка
+| Operation | Tokens | Approximate Cost |
+|---|---|---|
+| Embedding (question) | ~20–50 | $0.00001 |
+| Embedding (document) | ~500–1000 | $0.0001 |
+| LLM generation | ~300–800 | $0.0006–0.0016 |
 
-**Итоговый чеклист**
-![Final check](screenshots/final_check.png)
-![Final checklist](screenshots/final_checklist.png)
+**Average cost per request:** $0.0017–$0.002
 
-**Финальный ревью**
-![Final review](screenshots/final_review.png)
-![Final report review](screenshots/final_report_review.png)
+### Optimization Notes
 
-Проверено:
-- ✅ Все endpoints работают
-- ✅ Тесты проходят
-- ✅ Docker compose запускается
-- ✅ Документация полная
-- ✅ Eval показывает >80% accuracy
+- Caching handles approximately 90% of requests from Redis
+- Optimal chunk size is 1000 characters with 200-character overlap
+- Top-K=3 balances relevance and response speed
+- PostgreSQL connection pool size: 10
 
----
+## Troubleshooting
 
-### 📊 Результаты разработки
-
-**Конец процесса**
-![End of review](screenshots/end_of_review.png)
-
-**Статистика:**
-- **Время разработки**: ~4-5 часов с использованием Claude
-- **Строк кода**: ~2000 (включая тесты и конфигурацию)
-- **Покрытие тестами**: 15 тестов
-- **Качество RAG**: 87.5% accuracy на eval датасете
-
-**Особенности работы с Claude:**
-- Итеративная разработка с постоянным ревью
-- Объяснение каждого решения и альтернатив
-- Proactive suggestions по улучшению
-- Помощь в debugging и troubleshooting
-- Генерация тестов и документации
-
----
-
-### 💭 Выводы
-
-Использование Claude значительно ускорило разработку:
-- Не нужно было искать документацию по библиотекам
-- Автоматическая генерация boilerplate кода
-- Мгновенный code review и suggestions
-- Помощь в архитектурных решениях
-
-Без AI-ассистента такой проект занял бы ~2-3 дня вместо 4-5 часов.
-
-
-## 📊 Производительность
-
-### Типичное время ответа
-
-| Сценарий | Время | Описание |
-|----------|-------|----------|
-| 🎯 Cache Hit | ~50ms | Ответ из Redis кэша |
-| 🔍 Cache Miss (без LLM) | ~1s | Только поиск по векторам |
-| 🤖 Cache Miss (полный) | ~2-3s | Поиск + генерация ответа |
-
-### Использование токенов
-
-| Операция | Токены | Стоимость (примерно) |
-|----------|--------|---------------------|
-| Embedding (вопрос) | ~20-50 | $0.00001 |
-| Embedding (документ) | ~500-1000 | $0.0001 |
-| LLM генерация | ~300-800 | $0.0006-0.0016 |
-
-**Средняя стоимость одного запроса:** $0.0017 - $0.002
-
-### Оптимизация
-
-1. **Кэширование** - 90% запросов обрабатываются из кэша
-2. **Chunking** - оптимальный размер 1000 символов с перекрытием 200
-3. **Top-K=3** - баланс между релевантностью и скоростью
-4. **Connection pooling** - PostgreSQL pool size: 10
-
-## 🔧 Решение проблем
-
-### Сервис не запускается
-
+### Service fails to start
 ```bash
-# Проверьте логи
 docker compose logs api
 docker compose logs postgres
 
-# Пересоберите с чистого листа
 docker compose down -v
 docker compose up --build
 ```
 
-### Ошибка "Module not found"
-
+### "Module not found" error
 ```bash
-# Убедитесь, что все файлы скопированы в Docker
 docker compose build --no-cache
 docker compose up
 ```
 
-### База данных недоступна
-
+### Database unavailable
 ```bash
-# Проверьте статус PostgreSQL
 docker compose ps
 docker compose logs postgres
 
-# Пересоздайте volumes
 docker compose down -v
 docker compose up
 ```
 
-### OpenAI API ошибки
+### OpenAI API errors
 
-**"Invalid API key"**
-- Проверьте правильность ключа в `.env`
-- Убедитесь что ключ начинается с `sk-`
+**"Invalid API key"** — verify the key in `.env` and confirm it starts with `sk-`.
 
-**"Rate limit exceeded"**
-- Подождите несколько минут
-- Проверьте лимиты на [platform.openai.com](https://platform.openai.com/account/limits)
+**"Rate limit exceeded"** — wait a few minutes and check your limits at [platform.openai.com](https://platform.openai.com/account/limits).
 
-**"Insufficient quota"**
-- Пополните баланс на OpenAI аккаунте
-- Проверьте usage на dashboard
+**"Insufficient quota"** — add funds to your OpenAI account and check usage on the dashboard.
 
-### Redis недоступен
-
+### Redis unavailable
 ```bash
-# Проверьте Redis
 docker compose exec redis redis-cli ping
-# Должно вернуть: PONG
+# Expected: PONG
 
-# Перезапустите Redis
 docker compose restart redis
 ```
 
-### Документы не загружаются
+### Documents not loading
 
-1. Проверьте формат файлов (только .txt или .md)
-2. Убедитесь в UTF-8 кодировке
-3. Проверьте размер файла (< 10MB)
-4. Посмотрите логи: `docker compose logs api | grep "Loading"`
+- Verify file format (`.txt` or `.md` only)
+- Confirm UTF-8 encoding
+- Check file size (< 10MB)
+- Review logs: `docker compose logs api | grep "Loading"`
 
-### Медленные ответы
-
+### Slow responses
 ```bash
-# Проверьте метрики
+# Check metrics
 curl http://localhost:8000/api/metrics
 
-# Очистите кэш Redis
+# Clear Redis cache
 docker compose exec redis redis-cli FLUSHALL
 
-# Проверьте использование ресурсов
+# Check resource usage
 docker stats
 ```
----
-
-**Вопросы?** Создайте Issue в репозитории или свяжитесь с автором.
-
-**Приятного использования! 🚀**
